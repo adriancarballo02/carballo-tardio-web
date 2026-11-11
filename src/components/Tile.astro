@@ -1,0 +1,19 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+interface Props { p: CollectionEntry<'proyectos'>; eager?: boolean; order?: number }
+const { p, eager = false, order = 0 } = Astro.props;
+const d = p.data;
+const ratio = { horizontal: '3 / 2', vertical: '4 / 5', panoramica: '21 / 9', cuadrada: '1 / 1' }[d.miniatura];
+const h = { 1: 17, 2: 23, 3: 30 }[d.peso];
+const rn = { horizontal: 1.5, vertical: 0.8, panoramica: 2.333, cuadrada: 1 }[d.miniatura];
+const base = import.meta.env.BASE_URL;
+---
+<a class="tile" href={`${base}proyectos/${p.id}/`} style={`--r:${ratio};--rn:${rn};--h:${h};--o:${order}`} data-peso={d.peso}>
+  <div class="frame">
+    <Picture src={d.portada} formats={['avif','webp']} widths={[480, 800, 1200, 1800]} sizes="(min-width: 761px) 40vw, 90vw" alt={`${d.titulo}, ${d.año}`} loading={eager ? 'eager' : 'lazy'} />
+    {d.provisional && <span class="flag"><span class="prov">Provisional</span></span>}
+    <span class="info"><b>{d.titulo}</b><span>{d.resumen}</span></span>
+  </div>
+  <span class="cap"><b>{d.titulo}</b><span>{d.año}</span></span>
+</a>

@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import { Picture } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  const all = await getCollection('proyectos');
+  return all.map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+const { Content } = await render(p);
+const d = p.data;
+---
+<Base title={`${d.titulo} · Carballo Tardío`} description={d.resumen} current="proyectos">
+  <article class="wrap" style="padding-top:clamp(32px,5vw,64px);display:grid;gap:28px">
+    <Picture src={d.portada} formats={['avif','webp']} widths={[800,1400,2000]} sizes="100vw" alt={`${d.titulo}, ${d.año}`} loading="eager" style="width:100%;height:auto" />
+    <div style="display:grid;gap:12px;max-width:42rem">
+      <h1 style="font:300 var(--s4)/1.1 var(--serif)">{d.titulo} {d.provisional && <span class="prov">provisional</span>}</h1>
+      <p class="meta">{d.año} · {d.categorias.join(' · ')}</p>
+      <div><Content /></div>
+      <p class="meta">La ficha completa (columnas visuales y columna de información fija) llega en la fase 5.</p>
+    </div>
+  </article>
+</Base>

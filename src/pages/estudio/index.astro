@@ -1,9 +1,96 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { Picture } from 'astro:assets';
+import rodaje from '../../content/proyectos/provisional-06/portada.jpg';
+import paisaje from '../../content/proyectos/provisional-04/portada.jpg';
+const base = import.meta.env.BASE_URL;
+const pasos = [
+  ['Escuchar', 'Conocer a las personas, entender qué necesitan y descubrir qué hay detrás del encargo.'],
+  ['Comprender', 'Investigar el contexto y encontrar qué merece la pena contar.'],
+  ['Proponer', 'Caminos e ideas concretas, sin perder de vista el objetivo.'],
+  ['Acordar', 'Objetivo, condiciones, presupuesto y plazos, claros desde el principio.'],
+  ['Producir', 'Con autonomía y responsabilidad, sin marearte con decisiones innecesarias.'],
+  ['Entregar', 'En los formatos que necesitas y en el plazo acordado.'],
+];
 ---
-<Base title="Estudio · Carballo Tardío" description="Quién es Carballo Tardío y cómo trabaja." current="estudio">
-  <section class="wrap" style="padding-top:clamp(48px,8vw,110px);display:grid;gap:24px;max-width:60rem">
-    <h1 style="font:italic 300 var(--s5)/1.05 var(--serif)">Estudio</h1>
-    <p class="lede">Carballo Tardío es un estudio de creación y producción audiovisual nacido en Peque, en La Carballeda. No queremos trabajar más despacio. Queremos trabajar con intención.</p><p style="font:italic 300 var(--s1)/1.4 var(--serif);color:var(--accent)">Sé de dónde vengo, pero no sé adónde voy.</p>
+<Base title="Estudio · Carballo Tardío" description="Carballo Tardío es un estudio autoral de creación y producción audiovisual nacido en Peque, La Carballeda (Zamora), fundado por Adrián Lozano Mateos." current="estudio">
+  <div class="wrap top">
+    <h1>Estudio</h1>
+  </div>
+
+  <section class="wrap parte" aria-labelledby="e1">
+    <p class="label" id="e1">Una mirada</p>
+    <div class="txt">
+      <p class="lede">Carballo Tardío es un estudio autoral de creación y producción audiovisual. Hacemos piezas propias y encargos para marcas, empresas, instituciones y pequeños negocios.</p>
+      <p>Lo que define el estudio no es el tamaño del cliente ni el género del proyecto, sino la manera de abordarlo. Una campaña directa, un vídeo de producto o una pieza para redes reciben la misma atención que un cortometraje: entender qué hay que contar y encontrar el lenguaje que lo cuenta mejor.</p>
+      <p class="acento">No queremos trabajar más despacio. Queremos trabajar con intención.</p>
+    </div>
+  </section>
+
+  <section class="wrap parte con-img" aria-labelledby="e2">
+    <p class="label" id="e2">Un origen</p>
+    <div class="txt">
+      <p class="lede">El estudio nace en Peque, un pueblo pequeño de La Carballeda, en Zamora.</p>
+      <p>Ese origen forma parte de lo que somos, pero no marca el límite. Trabajamos desde allí y también en Zamora, Valladolid, Madrid y donde surja el proyecto, con una estructura ligera que nos permite desplazarnos y adaptarnos a cada producción.</p>
+    </div>
+    <figure class="img"><Picture src={paisaje} formats={['avif','webp']} widths={[600, 1000, 1400]} sizes="(min-width: 901px) 40vw, 92vw" alt="Rodaje en exteriores junto a un río" /><figcaption><span class="prov">Imagen provisional</span></figcaption></figure>
+  </section>
+
+  <section class="wrap parte persona" aria-labelledby="e3">
+    <p class="label" id="e3">Una persona</p>
+    <div class="txt">
+      <p class="lede">Adrián Lozano Mateos <span class="rol">Fundador y director creativo</span></p>
+      <p>Cineasta, guionista y escritor. Estudió Comunicación Audiovisual y un máster en escritura creativa, y trabaja en departamentos de cámara de series y películas españolas.<sup><a href="#n1" id="r1">1</a></sup> Dirige sus propios cortometrajes, alguno ya premiado,<sup><a href="#n2" id="r2">2</a></sup> y en 2023 cofundó el colectivo creativo Vivir Mata.</p>
+      <p>Le interesan la identidad, el paso del tiempo, las pasiones y las contradicciones de las personas. Esas preguntas atraviesan sus proyectos propios y forman parte de la mirada con la que aborda cualquier encargo.</p>
+      <ol class="notas">
+        <li id="n1">Entre otras, <i>Sueños de libertad</i> y <i>La que se avecina</i>. <a href="#r1" aria-label="Volver al texto">↩</a></li>
+        <li id="n2"><i>Una sirena en Córdoba</i>, premiada en el festival ÍCARO de Guatemala. Fue también jurado joven de la SEMINCI entre 2022 y 2024. <a href="#r2" aria-label="Volver al texto">↩</a></li>
+      </ol>
+    </div>
+    <figure class="img"><Picture src={rodaje} formats={['avif','webp']} widths={[600, 1000, 1400]} sizes="(min-width: 901px) 40vw, 92vw" alt="Equipo revisando un plano en el monitor durante un rodaje" /><figcaption><span class="prov">Imagen provisional · retrato pendiente</span></figcaption></figure>
+  </section>
+
+  <section class="wrap parte" aria-labelledby="e4">
+    <p class="label" id="e4">Una forma de trabajar</p>
+    <ol class="pasos">{pasos.map(([t, d], i) => <li><span class="n">{i + 1}</span><b>{t}</b><span>{d}</span></li>)}</ol>
+  </section>
+
+  <section class="wrap parte" aria-labelledby="e5">
+    <p class="label" id="e5">Una estructura abierta</p>
+    <div class="txt">
+      <p class="lede">Carballo Tardío no es una gran plantilla. Para cada proyecto formamos el equipo que necesita, con colaboradores de confianza en sonido, fotografía, arte, montaje o producción.</p>
+      <p>Así el estudio puede crecer con cada encargo sin perder lo que lo hace propio: la mirada, el cuidado por las imágenes y la cercanía con las personas.</p>
+      <p class="lema">Sé de dónde vengo, pero no sé adónde voy.</p>
+      <a class="link" href={`${base}contacto/`}>Cuéntanos qué quieres contar</a>
+    </div>
   </section>
 </Base>
+<style>
+  .top{padding-top:clamp(40px,7vw,100px)}
+  h1{font:300 var(--s5)/1 var(--serif)}
+  .parte{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding-top:clamp(64px,9vw,128px);align-items:start}
+  .parte>.label{grid-column:1 / span 3;border-top:1px solid var(--coal);padding-top:12px}
+  .txt{grid-column:4 / span 6;display:grid;gap:1.1em;border-top:1px solid var(--line);padding-top:12px}
+  .con-img .txt,.persona .txt{grid-column:4 / span 5}
+  .img{grid-column:10 / -1;margin:0;display:grid;gap:8px}
+  .con-img .img,.persona .img{grid-column:10 / -1}
+  .img :global(img){width:100%;height:auto}
+  .rol{display:block;font:500 var(--s-1)/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+  .acento,.lema{font:italic 300 var(--s2)/1.3 var(--serif);color:var(--accent)}
+  sup a{text-decoration:none;color:var(--accent);font:500 .7em/1 var(--sans);padding:0 2px}
+  .notas{margin:8px 0 0;padding:12px 0 0 1.2em;border-top:1px solid var(--line);font:400 .85rem/1.5 var(--sans);color:var(--muted);display:grid;gap:6px}
+  .notas a{text-decoration:none}
+  .pasos{grid-column:4 / -1;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px var(--gutter)}
+  .pasos li{display:grid;gap:6px;align-content:start;border-top:1px solid var(--line);padding-top:12px}
+  .pasos .n{font:400 var(--s-1)/1 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums}
+  .pasos b{font:400 var(--s1)/1.2 var(--serif)}
+  .pasos span:last-child{color:var(--muted);font-size:.95rem}
+  .txt .link{justify-self:start}
+  @media (max-width:900px){
+    .parte{grid-template-columns:minmax(0,1fr);row-gap:16px}
+    .parte>.label,.txt,.con-img .txt,.persona .txt,.img,.con-img .img,.persona .img,.pasos{grid-column:1/-1}
+    .txt{border-top:0;padding-top:0}
+    .img{max-width:28rem}
+    .pasos{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>

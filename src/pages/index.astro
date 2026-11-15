@@ -3,11 +3,11 @@ import Base from '../layouts/Base.astro';
 import Seleccion from '../components/Seleccion.astro';
 import { Picture } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import { SERVICIOS } from '../data/servicios';
 const base = import.meta.env.BASE_URL;
 const all = (await getCollection('proyectos')).sort((a, b) => a.data.orden - b.data.orden);
 const hero = all.find((p) => p.data.heroe) ?? all[0];
 const sel = all.filter((p) => p.data.destacado && p !== hero).slice(0, 9);
-const servicios = ['Campañas y vídeo de marca', 'Fotografía', 'Dron e imagen aérea', 'Cultura, territorio y patrimonio', 'Cine y documental', 'Dirección creativa y guion'];
 ---
 <Base over title="Carballo Tardío · Estudio de creación y producción audiovisual" description="Estudio autoral de creación y producción audiovisual nacido en Peque, La Carballeda (Zamora). Vídeo, fotografía, dron, cine y dirección creativa.">
   <section class="hero" aria-label="Carballo Tardío">
@@ -34,7 +34,7 @@ const servicios = ['Campañas y vídeo de marca', 'Fotografía', 'Dron e imagen 
     <p class="lede col-a">Escuchamos antes de encender la cámara. Buscamos qué merece la pena contar y qué lenguaje necesita cada proyecto, ya sea una película propia, una campaña o el vídeo de un pequeño negocio. <em>No queremos trabajar más despacio. Queremos trabajar con intención.</em></p>
     <div class="col-b">
       <p class="label">Servicios</p>
-      <ul class="svc">{servicios.map((s) => <li><a href={`${base}servicios/`}>{s}</a></li>)}</ul>
+      <ul class="svc">{SERVICIOS.map((s) => <li><a href={`${base}servicios/#${s.slug}`}>{s.nombre}</a></li>)}</ul>
       <p class="label">Quién</p>
       <p>Carballo Tardío es el estudio de Adrián Lozano Mateos, cineasta, guionista y escritor, que forma con colaboradores el equipo que necesita cada proyecto.</p>
     </div>

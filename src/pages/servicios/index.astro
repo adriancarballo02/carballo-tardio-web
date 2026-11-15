@@ -1,9 +1,73 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Tile from '../../components/Tile.astro';
+import { getCollection } from 'astro:content';
+import { SERVICIOS } from '../../data/servicios';
+const base = import.meta.env.BASE_URL;
+const all = (await getCollection('proyectos')).sort((a, b) => a.data.orden - b.data.orden);
+const ejemplos = (cats: string[]) => all.filter((p) => p.data.categorias.some((c) => cats.includes(c))).slice(0, 3);
 ---
-<Base title="Servicios · Carballo Tardío" description="Qué puedes contratar a Carballo Tardío." current="servicios">
-  <section class="wrap" style="padding-top:clamp(48px,8vw,110px);display:grid;gap:24px;max-width:60rem">
-    <h1 style="font:italic 300 var(--s5)/1.05 var(--serif)">Servicios</h1>
-    <ul style="list-style:none;margin:0;padding:0;font:400 var(--s2)/1.4 var(--serif)"><li>Campañas y vídeo de marca</li><li>Fotografía</li><li>Dron e imagen aérea</li><li>Cultura, territorio y patrimonio</li><li>Cine y documental</li><li>Dirección creativa y guion</li></ul>
-  </section>
+<Base title="Servicios · Carballo Tardío" description="Campañas y vídeo de marca, fotografía, dron, cultura y patrimonio, cine y documental, dirección creativa y guion." current="servicios">
+  <div class="wrap top">
+    <h1>Servicios</h1>
+    <p class="lede">Qué puedes encargarnos. Cada proyecto empieza escuchando, así que si lo tuyo no encaja exactamente en ninguno, cuéntanoslo igual.</p>
+  </div>
+  <div class="wrap layout">
+    <nav class="idx" aria-label="Servicios">
+      <ul>{SERVICIOS.map((s) => <li><a href={`#${s.slug}`}>{s.nombre}</a></li>)}</ul>
+      <a class="link" href={`${base}contacto/`}>Contar un proyecto</a>
+    </nav>
+    <div class="lista">
+      {SERVICIOS.map((s) => {
+        const ej = ejemplos(s.categorias);
+        return (
+          <section class="svc" id={s.slug} aria-labelledby={`t-${s.slug}`}>
+            <h2 id={`t-${s.slug}`}>{s.nombre}</h2>
+            <div class="cols">
+              <div>
+                <p class="label">Qué hacemos</p>
+                <p>{s.hacemos}</p>
+              </div>
+              <div>
+                <p class="label">Para qué sirve</p>
+                <p>{s.resuelve}</p>
+              </div>
+              <div>
+                <p class="label">Por ejemplo</p>
+                <ul class="tipos">{s.proyectos.map((t) => <li>{t}</li>)}</ul>
+              </div>
+            </div>
+            {ej.length > 0 && <div class="ej">{ej.map((p) => <Tile p={p} />)}</div>}
+            <a class="link" href={`${base}contacto/?tipo=${s.slug}`}>Hablar de un proyecto de {s.nombre.toLowerCase()} →</a>
+          </section>
+        );
+      })}
+    </div>
+  </div>
 </Base>
+<style>
+  .top{padding-top:clamp(40px,7vw,100px);display:grid;gap:18px;max-width:58rem}
+  h1{font:300 var(--s5)/1 var(--serif)}
+  .layout{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding-top:clamp(40px,6vw,80px);align-items:start}
+  .idx{grid-column:1 / span 3;position:sticky;top:24px;display:grid;gap:22px}
+  .idx ul{list-style:none;margin:0;padding:0;display:grid;gap:2px;font:400 .98rem/1.3 var(--sans)}
+  .idx li a{display:block;padding:7px 0;border-bottom:1px solid var(--line);text-decoration:none}
+  .idx .link{justify-self:start;font-size:.95rem}
+  .lista{grid-column:4 / -1;display:grid;gap:clamp(72px,9vw,128px)}
+  .svc{display:grid;gap:26px;scroll-margin-top:24px;border-top:1px solid var(--coal);padding-top:16px}
+  .svc h2{font:300 var(--s4)/1.1 var(--serif)}
+  .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
+  .cols>div{display:grid;gap:8px;align-content:start}
+  .tipos{list-style:none;margin:0;padding:0;font:400 .95rem/1.6 var(--sans)}
+  .ej{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);align-items:start}
+  .ej :global(.frame){aspect-ratio:3/2}
+  .svc>.link{justify-self:start}
+  @media (max-width:900px){
+    .layout{grid-template-columns:minmax(0,1fr)}
+    .idx{position:static;grid-column:1/-1;margin-bottom:48px}
+    .lista{grid-column:1/-1}
+    .cols{grid-template-columns:minmax(0,1fr)}
+    .ej{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .ej :global(.tile:nth-child(3)){display:none}
+  }
+</style>

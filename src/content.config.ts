@@ -15,6 +15,7 @@ const proyectos = defineCollection({
     miniatura: z.enum(['horizontal', 'vertical', 'panoramica', 'cuadrada']).default('horizontal'),
     peso: z.number().min(1).max(3).default(2),
     destacado: z.boolean().default(false),
+    heroe: z.boolean().default(false),
     orden: z.number().default(99),
     video: z.string().url().optional(),
     provisional: z.boolean().default(false),

@@ -1,0 +1,21 @@
+---
+// Logo fijo en trazados (generado con scripts/logo-a-trazados.cjs). No depende de fuentes ni de JavaScript.
+import logo from '../data/logo.json';
+interface Props { firma?: boolean; simbolo?: boolean; class?: string }
+const { firma = true, simbolo = true, class: cls = '' } = Astro.props;
+---
+<span class={`logo ${cls}`}>
+  {simbolo && <svg class="logo-sym" viewBox="0 0 100 100" aria-hidden="true" set:html={logo.simbolo} />}
+  {firma && (
+    <svg class="logo-firma" viewBox={logo.viewBox} role="img" aria-label="Carballo Tardío">
+      <path d={logo.carballo} fill="var(--ink)" />
+      <rect x={logo.linea.x} y={logo.linea.y} width={logo.linea.w} height={logo.linea.h} fill="var(--acc)" />
+      <path d={logo.tardio} fill="var(--acc)" />
+    </svg>
+  )}
+</span>
+<style>
+  .logo{display:inline-flex;align-items:center;gap:.55em;color:var(--ink)}
+  .logo-sym{width:1.8em;height:1.8em;flex:none}
+  .logo-firma{height:1em;width:auto;display:block}
+</style>

@@ -8,6 +8,7 @@ portada: ./portada.jpg
 miniatura: horizontal
 peso: 3
 destacado: true
+heroe: true
 orden: 5
 provisional: true
 ---

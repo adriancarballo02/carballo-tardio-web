@@ -37,18 +37,22 @@ p{margin:0}
 /* cabecera */
 .site-head{display:flex;align-items:center;gap:24px;padding-top:20px;padding-bottom:20px;position:relative;z-index:5}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:0}
-.brand .sym{width:38px;height:38px;flex:none}
-.brand .fz{--fh:21px}
+.brand .logo{font-size:21px}
+.site-head.over{position:absolute;left:0;right:0;top:0;color:#F3E7CF;--ink:#F3E7CF;--acc:#E8C79A;--o:#C99A6B}
+.site-head.over a:hover{color:#fff}
+.skip{position:absolute;left:12px;top:-60px;z-index:20;background:var(--coal);color:var(--paper);padding:10px 14px;font:500 .9rem/1 var(--sans)}
+.skip:focus{top:12px}
 .site-nav{margin-left:auto;display:flex;gap:clamp(14px,2.2vw,30px);font:400 .95rem/1 var(--sans)}
 .site-nav a{text-decoration:none;padding:6px 0}
-@media (max-width:640px){.site-head{flex-wrap:wrap;row-gap:10px}.site-nav{margin-left:0;width:100%;justify-content:space-between;font-size:.88rem}.brand .fz{--fh:17px}.brand .sym{width:32px;height:32px}}
+@media (max-width:640px){.site-head{flex-wrap:wrap;row-gap:10px}.site-nav{margin-left:0;width:100%;justify-content:space-between;font-size:.88rem}.brand .logo{font-size:17px}}
 /* pie */
-.site-foot{margin-top:clamp(80px,12vw,160px);padding-top:28px;padding-bottom:40px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;gap:24px;align-items:start}
-.site-foot .mantra{font:italic 300 var(--s1)/1.35 var(--serif)}
+.site-foot{margin-top:clamp(80px,12vw,160px);padding-top:28px;padding-bottom:40px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.site-foot .now{grid-auto-flow:column;justify-content:end;align-items:center;gap:10px}
+.site-foot a{text-decoration:none}
 .site-foot .col{display:grid;gap:6px;font:400 .88rem/1.5 var(--sans);color:var(--muted)}
 .site-foot .col b{color:var(--fg);font-weight:500}
-.site-foot .sym{width:48px;height:48px}
-@media (max-width:760px){.site-foot{grid-template-columns:minmax(0,1fr)}}
+.site-foot .sym{width:28px;height:28px;color:var(--fg)}
+@media (max-width:760px){.site-foot{grid-template-columns:minmax(0,1fr)}.site-foot .now{justify-content:start}}
 /* secciones */
 .block{padding-top:clamp(72px,10vw,140px)}
 .block-head{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-top:1px solid var(--line);padding-top:14px;margin-bottom:clamp(24px,4vw,48px)}

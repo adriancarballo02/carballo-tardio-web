@@ -1,0 +1,28 @@
+---
+// Composición editorial asimétrica sobre una retícula de 12 columnas.
+// Un repertorio corto de posiciones que se repite: parece libre, pero los bordes y el ritmo se mantienen al crecer.
+import Tile from './Tile.astro';
+import type { CollectionEntry } from 'astro:content';
+interface Props { items: CollectionEntry<'proyectos'>[] }
+const { items } = Astro.props;
+const PAT = [
+  { c: 1, s: 7, mt: 0 }, { c: 9, s: 4, mt: 9 }, { c: 2, s: 4, mt: 4 }, { c: 7, s: 6, mt: 0 },
+  { c: 1, s: 5, mt: 7 }, { c: 7, s: 3, mt: 0 }, { c: 10, s: 3, mt: 11 }, { c: 3, s: 6, mt: 3 }, { c: 9, s: 4, mt: 8 },
+];
+---
+<div class="sel">
+  {items.map((p, i) => {
+    const k = PAT[i % PAT.length];
+    return <div class="cell" style={`--c:${k.c};--s:${k.s};--mt:${k.mt}`}><Tile p={p} eager={i < 2} /></div>;
+  })}
+</div>
+<style>
+  .sel{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:clamp(40px,6vw,96px);align-items:start}
+  .cell{grid-column:var(--c) / span var(--s);margin-top:calc(var(--mt) * 1vw)}
+  .cell :global(.frame){aspect-ratio:var(--r)}
+  @media (max-width:760px){
+    .sel{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:32px}
+    .cell{grid-column:auto / span 1;margin-top:0}
+    .cell:nth-child(3n+1){grid-column:1 / -1}
+  }
+</style>

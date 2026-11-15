@@ -2,14 +2,109 @@
 import Base from '../../layouts/Base.astro';
 import Tile from '../../components/Tile.astro';
 import { getCollection } from 'astro:content';
+import { CATEGORIAS } from '../../data/categorias';
+const base = import.meta.env.BASE_URL;
 const all = (await getCollection('proyectos')).sort((a, b) => a.data.orden - b.data.orden);
+const counts = Object.keys(CATEGORIAS).map((k) => [k, CATEGORIAS[k], all.filter((p) => p.data.categorias.includes(k)).length] as const).filter((c) => c[2] > 0);
+// Repertorio de posiciones sobre 9 columnas: c = columna inicial, s = ancho, mt = desplazamiento vertical (vw).
+const PAT = [
+  { c: 1, s: 5, mt: 0 }, { c: 7, s: 3, mt: 6 }, { c: 2, s: 3, mt: 3 }, { c: 6, s: 4, mt: 0 },
+  { c: 1, s: 4, mt: 5 }, { c: 6, s: 2, mt: 0 }, { c: 8, s: 2, mt: 8 }, { c: 3, s: 5, mt: 2 },
+];
 ---
 <Base title="Proyectos · Carballo Tardío" description="Archivo de proyectos de Carballo Tardío: audiovisual, fotografía, dron, cine y cultura." current="proyectos">
-  <section class="wrap" style="padding-top:clamp(48px,8vw,110px);display:grid;gap:32px">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap"><h1 style="font:300 var(--s5)/1.05 var(--serif)">Proyectos</h1></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:28px var(--gutter)">
-      {all.map((p) => <Tile p={p} />)}
+  <div class="archivo wrap">
+    <aside class="side">
+      <h1>Proyectos</h1>
+      <p class="meta" aria-live="polite" id="total">{all.length} proyectos</p>
+      <nav class="filtros" aria-label="Filtrar proyectos">
+        <button type="button" class="mark on" data-f="todo" aria-pressed="true">Todo <span>{all.length}</span></button>
+        {counts.map(([k, name, n]) => <button type="button" class="mark" data-f={k} aria-pressed="false">{name} <span>{n}</span></button>)}
+      </nav>
+      <a class="meta indice-link" href="#indice">Índice ↓</a>
+    </aside>
+    <div class="grid9" id="grid9" data-pat={JSON.stringify(PAT)}>
+      {all.map((p, i) => {
+        const k = PAT[i % PAT.length];
+        return <div class="cell" data-cats={p.data.categorias.join(' ')} style={`--c:${k.c};--s:${k.s};--mt:${k.mt}`}><Tile p={p} eager={i < 2} /></div>;
+      })}
     </div>
+  </div>
+
+  <section class="wrap indice" id="indice" aria-labelledby="ind-t">
+    <div class="block-head"><h2 class="label" id="ind-t">Índice</h2></div>
+    <ol class="rows">
+      {all.map((p, i) => (
+        <li data-cats={p.data.categorias.join(' ')}>
+          <a href={`${base}proyectos/${p.id}/`}>
+            <span class="n">{String(i + 1).padStart(3, '0')}</span>
+            <b>{p.data.titulo}</b>
+            <span class="c">{p.data.categorias.map((c) => CATEGORIAS[c]).join(', ')}</span>
+            <span class="y">{p.data.año}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
   </section>
 </Base>
-<style>.tile :global(.frame){aspect-ratio:var(--r)}</style>
+
+<style>
+  .archivo{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding-top:clamp(36px,6vw,80px);align-items:start}
+  .side{grid-column:1 / span 3;position:sticky;top:24px;display:grid;gap:14px;align-content:start;padding-bottom:24px}
+  .side h1{font:300 var(--s5)/1 var(--serif)}
+  .filtros{display:grid;gap:2px;margin-top:10px}
+  .filtros button{all:unset;cursor:pointer;display:flex;gap:2px;font:400 1rem/1.3 var(--sans);padding:6px 0;border-bottom:1px solid var(--line)}
+  .filtros button span{margin-left:auto;padding-left:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .filtros button:hover{color:var(--accent)}
+  .filtros button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .filtros button.on{color:var(--accent)}
+  .indice-link{margin-top:10px;text-decoration:none}
+  .grid9{grid-column:4 / -1;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));column-gap:var(--gutter);row-gap:clamp(36px,5vw,80px);align-items:start}
+  .cell{grid-column:var(--c) / span var(--s);margin-top:calc(var(--mt) * 1vw)}
+  .cell :global(.frame){aspect-ratio:var(--r)}
+  .cell.entra{animation:entra .35s var(--ease) both}
+  @keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .indice{padding-top:clamp(80px,10vw,140px)}
+  .rows{list-style:none;margin:0;padding:0}
+  .rows a{display:grid;grid-template-columns:4rem minmax(0,1.4fr) minmax(0,1fr) 4rem;gap:var(--gutter);align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line);text-decoration:none}
+  .rows b{font:italic 400 var(--s1)/1.25 var(--serif)}
+  .rows .n,.rows .y{font:400 .85rem/1 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums}
+  .rows .y{text-align:right}
+  .rows .c{font:400 .9rem/1.3 var(--sans);color:var(--muted)}
+  .rows a:hover b{color:var(--accent)}
+  @media (max-width:900px){
+    .archivo{grid-template-columns:minmax(0,1fr)}
+    .side{grid-column:1/-1;position:static}
+    .filtros{display:flex;flex-wrap:wrap;gap:6px 16px}
+    .filtros button{border:0;padding:4px 0}
+    .filtros button span{padding-left:6px}
+    .indice-link{display:none}
+    .grid9{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));row-gap:32px;margin-top:16px}
+    .cell{grid-column:auto / span 1 !important;margin-top:0}
+    .cell.wide{grid-column:1 / -1 !important}
+    .rows a{grid-template-columns:3rem minmax(0,1fr) 3.5rem}
+    .rows .c{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){.cell.entra{animation:none}}
+</style>
+
+<script is:inline>
+(function(){
+  var grid=document.getElementById('grid9');if(!grid)return;
+  var PAT=JSON.parse(grid.dataset.pat),cells=[].slice.call(grid.querySelectorAll('.cell')),rows=[].slice.call(document.querySelectorAll('.rows li')),
+      btns=[].slice.call(document.querySelectorAll('.filtros button')),total=document.getElementById('total'),
+      rm=window.matchMedia('(prefers-reduced-motion: reduce)');
+  /* en móvil, uno de cada tres ocupa el ancho entero */
+  function layout(){var v=0;cells.forEach(function(c){if(c.hidden)return;var k=PAT[v%PAT.length];c.style.setProperty('--c',k.c);c.style.setProperty('--s',k.s);c.style.setProperty('--mt',k.mt);c.classList.toggle('wide',v%3===0);v++;});return v;}
+  function apply(f,animate){
+    btns.forEach(function(b){var on=b.dataset.f===f;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))});
+    function run(){cells.forEach(function(c){var show=f==='todo'||c.dataset.cats.split(' ').indexOf(f)>=0;c.hidden=!show;c.classList.remove('entra');if(show&&animate&&!rm.matches){void c.offsetWidth;c.classList.add('entra')}});
+      rows.forEach(function(r){r.hidden=!(f==='todo'||r.dataset.cats.split(' ').indexOf(f)>=0)});
+      var n=layout();total.textContent=n+(n===1?' proyecto':' proyectos');}
+    run();
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){var f=b.dataset.f;apply(f,true);
+    history.replaceState(null,'',f==='todo'?location.pathname:'#'+f);})});
+  var h=location.hash.slice(1);apply(btns.some(function(b){return b.dataset.f===h})?h:'todo',false);
+})();
+</script>

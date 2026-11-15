@@ -1,0 +1,58 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Tile from '../../../components/Tile.astro';
+import { getCollection } from 'astro:content';
+const all = (await getCollection('proyectos')).sort((a, b) => a.data.orden - b.data.orden);
+// Para que las columnas tengan recorrido con solo 10 proyectos, el prototipo los repite (data-rep). Con el archivo real no hará falta.
+const seq = [...all, ...all, ...all].map((p, i) => ({ p, rep: i >= all.length }));
+const cols = [0, 1, 2, 3].map((c) => seq.filter((_, i) => i % 4 === c));
+---
+<Base title="Prototipo A · Columnas · Carballo Tardío" description="Prototipo: cuatro columnas de proyectos que suben y bajan con el scroll." current="proyectos">
+  <p class="wrap meta intro-p">Prototipo A · Columnas. Al bajar, la primera y la tercera columna suben y la segunda y la cuarta bajan. Se paran cuando paras. En este prototipo los proyectos se repiten para que haya recorrido.</p>
+  <section class="cols-sec" id="cols-sec" aria-label="Proyectos en columnas">
+    <div class="stage">
+      <div class="cols wrap">
+        {cols.map((list, c) => (
+          <div class={`col ${c % 2 ? 'down' : 'up'}`}>
+            {list.map(({ p, rep }) => <div class="it" data-rep={rep ? '1' : undefined}><Tile p={p} /></div>)}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+<script is:inline>(function(){var m=window.matchMedia;if(m('(min-width: 901px)').matches&&!m('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('vcols')})();</script>
+<style>
+  .intro-p{padding-bottom:12px}
+  .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gutter);align-items:start}
+  .col{display:grid;gap:clamp(20px,2.4vw,40px)}
+  .it :global(.frame){aspect-ratio:var(--r)}
+  .it[data-rep]{display:none}
+  .col.down{margin-top:12vw}
+  @media (min-width:901px){.cols{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  :global(html.vcols) .stage{position:sticky;top:0;height:100svh;overflow:hidden}
+  :global(html.vcols) .it[data-rep]{display:block}
+  :global(html.vcols) .col{will-change:transform}
+  :global(html.vcols) .col.down{margin-top:0}
+</style>
+<script is:inline>
+(function(){
+  var html=document.documentElement,sec=document.getElementById('cols-sec');if(!sec)return;
+  var cols=[].slice.call(sec.querySelectorAll('.col')),travel=[],max=0,ticking=false;
+  function measure(){
+    if(!html.classList.contains('vcols')){sec.style.height='';cols.forEach(function(c){c.style.transform=''});return;}
+    var vh=window.innerHeight;travel=cols.map(function(c){return Math.max(0,c.offsetHeight-vh+40)});max=Math.max.apply(null,travel);
+    sec.style.height=(vh+max)+'px';update();}
+  function update(){ticking=false;if(!html.classList.contains('vcols'))return;
+    var span=sec.offsetHeight-window.innerHeight,p=span>0?Math.min(1,Math.max(0,-sec.getBoundingClientRect().top/span)):0;
+    cols.forEach(function(c,i){var t=travel[i],y=c.classList.contains('up')?-p*t:-(1-p)*t;c.style.transform='translate3d(0,'+y.toFixed(1)+'px,0)'});}
+  window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(update)}},{passive:true});
+  /* con teclado: al enfocar un proyecto oculto, se lleva el scroll hasta que quede a la vista */
+  sec.addEventListener('focusin',function(e){if(!html.classList.contains('vcols'))return;var a=e.target.closest('a'),col=a&&a.closest('.col');if(!col)return;
+    var i=cols.indexOf(col),t=travel[i]||0,off=a.offsetTop-window.innerHeight*.3,p=col.classList.contains('up')?off/t:1-off/t;p=Math.min(1,Math.max(0,p||0));
+    window.scrollTo({top:sec.offsetTop+p*(sec.offsetHeight-window.innerHeight),behavior:'auto'});});
+  var mq=window.matchMedia('(min-width: 901px)'),rm=window.matchMedia('(prefers-reduced-motion: reduce)');
+  function mode(){html.classList.toggle('vcols',mq.matches&&!rm.matches);measure()}
+  mq.addEventListener('change',mode);rm.addEventListener('change',mode);window.addEventListener('resize',measure);window.addEventListener('load',measure);measure();
+})();
+</script>

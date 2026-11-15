@@ -1,9 +1,86 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { SERVICIOS } from '../../data/servicios';
+import { CORREO, LUGAR } from '../../data/sitio';
 ---
-<Base title="Contacto · Carballo Tardío" description="Escribe a Carballo Tardío." current="contacto">
-  <section class="wrap" style="padding-top:clamp(48px,8vw,110px);display:grid;gap:24px;max-width:60rem">
-    <h1 style="font:italic 300 var(--s5)/1.05 var(--serif)">Cuéntanos qué quieres contar.</h1>
-    <p>Desde Peque, La Carballeda. Trabajamos allí donde surgen los proyectos.</p>
-  </section>
+<Base title="Contacto · Carballo Tardío" description="Pide propuesta y presupuesto a Carballo Tardío: vídeo, fotografía y dron en Zamora y donde surja el proyecto." current="contacto">
+  <div class="wrap top">
+    <h1>Cuéntanos qué quieres contar.</h1>
+    <p class="intro">Rellena los huecos y te abrimos un correo ya escrito. Cada proyecto lleva su propuesta y su presupuesto a medida.</p>
+  </div>
+
+  <div class="wrap layout">
+    <form class="molde" id="molde" novalidate data-correo={CORREO}>
+      <p class="linea"><label for="f-asunto">Asunto:</label> <input id="f-asunto" name="asunto" type="text" placeholder="por ejemplo, vídeo para la bodega" autocomplete="off" size="24"></p>
+      <p>Hola, Carballo Tardío.</p>
+      <p>Me llamo <label class="sr" for="f-nombre">Nombre</label><input id="f-nombre" name="nombre" type="text" placeholder="tu nombre" autocomplete="name" required size="14">
+        y os escribo desde <label class="sr" for="f-desde">Empresa, institución o proyecto (opcional)</label><input id="f-desde" name="desde" type="text" placeholder="empresa, institución o proyecto" autocomplete="organization" size="26">.</p>
+      <p>Tengo entre manos <label class="sr" for="f-tipo">Tipo de proyecto</label><select id="f-tipo" name="tipo">
+          <option value="">un proyecto (aún sin nombre)</option>
+          {SERVICIOS.map((s) => <option value={s.slug}>{s.nombre.toLowerCase()}</option>)}
+        </select>
+        y os cuento:</p>
+      <p><label class="sr" for="f-mensaje">Mensaje</label><textarea id="f-mensaje" name="mensaje" rows="5" placeholder="Qué es, para cuándo, dónde, y lo que se te ocurra." required></textarea></p>
+      <p>Podéis responderme en <label class="sr" for="f-correo">Tu correo</label><input id="f-correo" name="correo" type="email" placeholder="tu@correo.com" autocomplete="email" required size="22">.</p>
+      <p class="error" id="f-error" role="alert" hidden></p>
+      <div class="acciones">
+        <button type="submit" class="enviar">Abrir el correo para enviarlo →</button>
+        <p class="meta">Se abre tu aplicación de correo con el mensaje escrito. Nada se envía hasta que tú lo mandes, y este formulario no guarda ningún dato.</p>
+      </div>
+    </form>
+
+    <aside class="datos">
+      <div><p class="label">Correo</p><p><span class="correo" id="correo">{CORREO}</span> <button type="button" class="copiar" id="copiar">Copiar</button></p></div>
+      <div><p class="label">Desde</p><p>{LUGAR}. Trabajamos allí donde surgen los proyectos: Zamora, Valladolid, Madrid y donde haga falta.</p></div>
+      <div><p class="label">Para quién</p><p>Empresas, marcas, instituciones, productoras y personas con un proyecto propio.</p></div>
+    </aside>
+  </div>
 </Base>
+
+<style>
+  .top{padding-top:clamp(40px,7vw,100px);display:grid;gap:16px;max-width:60rem}
+  h1{font:italic 300 var(--s5)/1.05 var(--serif)}
+  .intro{color:var(--muted);max-width:40rem}
+  .layout{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding-top:clamp(40px,6vw,80px);align-items:start}
+  .molde{grid-column:1 / span 8;display:grid;gap:.9em;font:300 var(--s2)/1.6 var(--serif)}
+  .molde p{margin:0}
+  .linea{font:400 1rem/1.4 var(--sans);display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:10px!important}
+  .linea input{flex:1;font:400 1rem/1.4 var(--sans)}
+  input,select,textarea{font:inherit;color:var(--accent);background:transparent;border:0;border-bottom:1px solid var(--muted);border-radius:0;padding:0 2px;max-width:100%}
+  input::placeholder,textarea::placeholder{color:#9A8D78;font-style:italic}
+  select{cursor:pointer;padding-right:4px}
+  textarea{width:100%;display:block;resize:vertical;border:1px solid var(--line);padding:12px 14px;font:400 1.05rem/1.55 var(--serif);color:var(--fg);background:rgba(255,255,255,.25)}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:3px}
+  [aria-invalid="true"]{border-color:#9B3B2A}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .error{font:500 .95rem/1.4 var(--sans);color:#9B3B2A}
+  .acciones{display:grid;gap:10px;margin-top:8px}
+  .enviar{justify-self:start;font:500 1rem/1 var(--sans);color:var(--paper);background:var(--coal);border:0;padding:16px 22px;cursor:pointer}
+  .enviar:hover{background:var(--chestnut)}
+  .datos{grid-column:10 / -1;display:grid;gap:26px;font:400 .95rem/1.5 var(--sans)}
+  .datos>div{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+  .correo{font:italic 400 1.2rem/1.3 var(--serif);user-select:all;word-break:break-all}
+  .copiar{font:500 .8rem/1 var(--sans);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 10px;cursor:pointer;color:var(--fg);margin-left:6px}
+  @media (max-width:900px){
+    .layout{grid-template-columns:minmax(0,1fr);row-gap:56px}
+    .molde,.datos{grid-column:1/-1}
+    .molde{font-size:var(--s1)}
+  }
+</style>
+<script is:inline>
+(function(){
+  var f=document.getElementById('molde');if(!f)return;var correo=f.dataset.correo,err=document.getElementById('f-error');
+  var tipo=new URLSearchParams(location.search).get('tipo');if(tipo&&f.tipo.querySelector('option[value="'+tipo+'"]'))f.tipo.value=tipo;
+  f.addEventListener('submit',function(e){e.preventDefault();
+    var faltan=[];[['nombre','tu nombre'],['mensaje','el mensaje'],['correo','tu correo']].forEach(function(c){var el=f[c[0]],ok=el.value.trim()&&(c[0]!=='correo'||el.checkValidity());el.setAttribute('aria-invalid',ok?'false':'true');if(!ok)faltan.push(c[1])});
+    if(faltan.length){err.hidden=false;err.textContent='Falta '+faltan.join(', ').replace(/, ([^,]*)$/,' y $1')+'.';f.querySelector('[aria-invalid="true"]').focus();return;}
+    err.hidden=true;
+    var tipoTxt=f.tipo.value?f.tipo.options[f.tipo.selectedIndex].text:'un proyecto';
+    var asunto=f.asunto.value.trim()||('Proyecto: '+tipoTxt);
+    var cuerpo='Hola, Carballo Tardío.\n\nMe llamo '+f.nombre.value.trim()+(f.desde.value.trim()?' y os escribo desde '+f.desde.value.trim():'')+'.\nTengo entre manos '+tipoTxt+' y os cuento:\n\n'+f.mensaje.value.trim()+'\n\nPodéis responderme en '+f.correo.value.trim()+'.';
+    location.href='mailto:'+correo+'?subject='+encodeURIComponent(asunto)+'&body='+encodeURIComponent(cuerpo);
+  });
+  var c=document.getElementById('copiar');c.addEventListener('click',function(){var t=document.getElementById('correo').textContent;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){c.textContent='Copiado'},function(){var r=document.createRange();r.selectNodeContents(document.getElementById('correo'));var s=getSelection();s.removeAllRanges();s.addRange(r);c.textContent='Seleccionado'});});
+})();
+</script>

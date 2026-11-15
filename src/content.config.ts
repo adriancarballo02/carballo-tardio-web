@@ -16,6 +16,8 @@ const proyectos = defineCollection({
     peso: z.number().min(1).max(3).default(2),
     destacado: z.boolean().default(false),
     heroe: z.boolean().default(false),
+    // Vídeo corto en bucle para la portada (MP4 sin sonido, ruta dentro de public/, p. ej. video/vendimia.mp4)
+    bucle: z.string().optional(),
     orden: z.number().default(99),
     video: z.string().url().optional(),
     formato: z.string().optional(),

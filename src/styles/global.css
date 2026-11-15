@@ -51,7 +51,7 @@ p{margin:0}
 .site-foot a{text-decoration:none}
 .site-foot .col{display:grid;gap:6px;font:400 .88rem/1.5 var(--sans);color:var(--muted)}
 .site-foot .col b{color:var(--fg);font-weight:500}
-.site-foot .sym{width:28px;height:28px;color:var(--fg)}
+.site-foot .sym{width:44px;height:44px;color:var(--fg)}
 @media (max-width:760px){.site-foot{grid-template-columns:minmax(0,1fr)}.site-foot .now{justify-content:start}}
 /* secciones */
 .block{padding-top:clamp(72px,10vw,140px)}

@@ -1,6 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
+import { CATEGORIAS } from '../data/categorias';
 interface Props { p: CollectionEntry<'proyectos'>; eager?: boolean; order?: number }
 const { p, eager = false, order = 0 } = Astro.props;
 const d = p.data;
@@ -15,5 +16,5 @@ const base = import.meta.env.BASE_URL;
     {d.provisional && <span class="flag"><span class="prov">Provisional</span></span>}
     <span class="info"><b>{d.titulo}</b><span>{d.resumen}</span></span>
   </div>
-  <span class="cap"><b>{d.titulo}</b><span>{d.año}</span></span>
+  <span class="cap"><b>{d.titulo}</b><span>{CATEGORIAS[d.categorias[0]]} · {d.año}</span></span>
 </a>

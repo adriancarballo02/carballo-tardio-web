@@ -1,23 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
 import Seleccion from '../components/Seleccion.astro';
-import { Picture } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import { SERVICIOS } from '../data/servicios';
 const base = import.meta.env.BASE_URL;
 const all = (await getCollection('proyectos')).sort((a, b) => a.data.orden - b.data.orden);
 const hero = all.find((p) => p.data.heroe) ?? all[0];
 const sel = all.filter((p) => p.data.destacado && p !== hero).slice(0, 9);
+const poster = await getImage({ src: hero.data.portada, width: 2000, format: 'webp' });
 ---
-<Base over title="Carballo Tardío · Estudio de creación y producción audiovisual" description="Estudio autoral de creación y producción audiovisual nacido en Peque, La Carballeda (Zamora). Vídeo, fotografía, dron, cine y dirección creativa.">
+<Base over title="Carballo Tardío · Estudio de creación y producción audiovisual" description="Estudio de vídeo, fotografía y dron en Zamora (Peque, La Carballeda): campañas, cultura, cine y dirección creativa para marcas, instituciones y proyectos propios." home>
   <section class="hero" aria-label="Carballo Tardío">
-    <Picture src={hero.data.portada} formats={['avif','webp']} widths={[800, 1400, 2000, 2600]} sizes="100vw" alt={`${hero.data.titulo}, ${hero.data.año}`} loading="eager" fetchpriority="high" class="hero-img" />
+    {hero.data.bucle
+      ? <><video class="hero-img" id="bucle" src={`${base}${hero.data.bucle}`} poster={poster.src} muted loop playsinline preload="metadata" aria-label={`${hero.data.titulo}, ${hero.data.año}`}></video><button type="button" class="pausa" id="pausa" aria-pressed="false">Pausar</button></>
+      : <Picture src={hero.data.portada} formats={['avif','webp']} widths={[800, 1400, 2000, 2600]} sizes="100vw" alt={`${hero.data.titulo}, ${hero.data.año}`} loading="eager" fetchpriority="high" class="hero-img" />}
     <div class="shade" aria-hidden="true"></div>
     {hero.data.provisional && <span class="flag"><span class="prov">Imagen provisional</span></span>}
     <div class="hero-text wrap">
       <div class="claim">
         <h1>Una mirada propia para cada historia.</h1>
-        <p>Estudio de creación y producción audiovisual. Desde Peque, La Carballeda. Trabajamos allí donde surgen los proyectos.</p>
+        <p>Estudio de creación y producción audiovisual: vídeo, fotografía y dron para marcas, instituciones y proyectos propios. Desde Peque, La Carballeda, allí donde surgen los proyectos.</p>
         <a class="link" href="#seleccion">Ver proyectos ↓</a>
       </div>
       <a class="credit" href={`${base}proyectos/${hero.id}/`}><b>{hero.data.titulo}</b><span>{hero.data.año} · Ver proyecto</span></a>
@@ -46,6 +49,12 @@ const sel = all.filter((p) => p.data.destacado && p !== hero).slice(0, 9);
   </section>
 </Base>
 
+<script is:inline>
+(function(){var v=document.getElementById('bucle');if(!v)return;var b=document.getElementById('pausa'),rm=window.matchMedia('(prefers-reduced-motion: reduce)');
+  function set(play){if(play){v.play().catch(function(){})}else v.pause();b.textContent=play?'Pausar':'Reproducir';b.setAttribute('aria-pressed',String(!play));}
+  set(!rm.matches);b.addEventListener('click',function(){set(v.paused)});})();
+</script>
+
 <style>
   .hero{position:relative;height:clamp(480px,88svh,960px);color:#F3E7CF;display:flex;align-items:flex-end;isolation:isolate;overflow:hidden;background:var(--coal)}
   .hero :global(.hero-img),.hero :global(picture){position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
@@ -60,6 +69,7 @@ const sel = all.filter((p) => p.data.destacado && p !== hero).slice(0, 9);
   .credit{display:grid;text-align:right;text-decoration:none;font:400 .85rem/1.4 var(--sans);color:#F3E7CF}
   .credit b{font:italic 400 1.05rem/1.3 var(--serif)}
   .credit:hover{color:#fff}
+  .pausa{position:absolute;right:max(var(--margin),env(safe-area-inset-right,0px));top:132px;font:500 .8rem/1 var(--sans);color:#F3E7CF;background:rgba(20,17,14,.45);border:1px solid rgba(243,231,207,.5);border-radius:999px;padding:8px 12px;cursor:pointer}
   .seleccion{padding-top:clamp(40px,6vw,80px)}
   .col-a{grid-column:1/8}
   .col-b{grid-column:9/-1;display:grid;gap:10px;align-content:start;padding-top:.4em}

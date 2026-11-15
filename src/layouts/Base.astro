@@ -4,10 +4,20 @@ import '@fontsource-variable/newsreader/opsz-italic.css';
 import '@fontsource-variable/archivo/standard.css';
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
-interface Props { title: string; description: string; current?: string; over?: boolean }
-const { title, description, current = '', over = false } = Astro.props;
+import { CORREO } from '../data/sitio';
+interface Props { title: string; description: string; current?: string; over?: boolean; home?: boolean }
+const { title, description, current = '', over = false, home = false } = Astro.props;
+
 const base = import.meta.env.BASE_URL;
 const nav = [['proyectos','Proyectos'],['servicios','Servicios'],['estudio','Estudio'],['contacto','Contacto']];
+const ld = {
+  '@context': 'https://schema.org', '@type': 'ProfessionalService', name: 'Carballo Tardío',
+  description: 'Estudio de creación y producción audiovisual: vídeo, fotografía y dron para marcas, instituciones y proyectos propios.',
+  url: new URL(base, Astro.site).href, image: new URL(`${base}og.jpg`, Astro.site).href,
+  address: { '@type': 'PostalAddress', addressLocality: 'Peque', addressRegion: 'Zamora', addressCountry: 'ES' },
+  areaServed: ['Zamora', 'Castilla y León', 'Valladolid', 'Madrid'],
+  founder: { '@type': 'Person', name: 'Adrián Lozano Mateos' },
+};
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 <!doctype html>
@@ -22,6 +32,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <meta property="og:description" content={description}>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_ES">
+<meta property="og:image" content={new URL(`${base}og.jpg`, Astro.site)}>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F0E8D9">
+<link rel="sitemap" href={`${base}sitemap.xml`}>
+{home && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
 <link rel="icon" id="favicon" href={`${base}favicon.svg`} type="image/svg+xml">
 <meta name="robots" content="noindex">
 </head>
@@ -35,8 +52,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 </header>
 <main id="contenido"><slot /></main>
 <footer class="site-foot wrap">
-  <div class="col"><b>Carballo Tardío</b><span>Estudio de creación y producción audiovisual.</span><span>Desde Peque, La Carballeda. Trabajamos allí donde surgen los proyectos.</span></div>
-  <nav class="col" aria-label="Pie">{nav.map(([slug, name]) => <a href={`${base}${slug}/`}>{name}</a>)}</nav>
+  <div class="col"><b>Carballo Tardío</b><span>Estudio de creación y producción audiovisual.</span><span>Desde Peque, La Carballeda. Trabajamos allí donde surgen los proyectos.</span><span>Esta web no usa cookies.</span></div>
+  <nav class="col" aria-label="Pie">{nav.map(([slug, name]) => <a href={`${base}${slug}/`}>{name}</a>)}<span class="correo-pie">{CORREO}</span></nav>
   <div class="col now"><svg class="sym" viewBox="0 0 100 100" data-sign aria-hidden="true"></svg><span data-now></span></div>
 </footer>
 <script is:inline defer src={`${base}js/cardo-core.js`}></script>

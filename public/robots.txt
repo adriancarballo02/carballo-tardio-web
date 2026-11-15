@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://adriancarballo02.github.io/carballo-tardio-web/sitemap.xml

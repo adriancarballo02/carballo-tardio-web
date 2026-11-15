@@ -18,6 +18,14 @@ const proyectos = defineCollection({
     heroe: z.boolean().default(false),
     orden: z.number().default(99),
     video: z.string().url().optional(),
+    formato: z.string().optional(),
+    creditos: z.array(z.object({ rol: z.string(), nombre: z.string() })).default([]),
+    galeria: z.array(z.object({
+      src: image(),
+      pie: z.string().optional(),
+      tipo: z.enum(['final', 'proceso']).default('final'),
+      columna: z.union([z.literal(1), z.literal(2)]).optional(),
+    })).default([]),
     provisional: z.boolean().default(false),
   }),
 });

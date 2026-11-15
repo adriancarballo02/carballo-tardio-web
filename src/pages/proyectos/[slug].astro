@@ -1,22 +1,122 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Tile from '../../components/Tile.astro';
+import Video from '../../components/Video.astro';
 import { Picture } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
+import { CATEGORIAS } from '../../data/categorias';
 export async function getStaticPaths() {
-  const all = await getCollection('proyectos');
-  return all.map((p) => ({ params: { slug: p.id }, props: { p } }));
+  const all = (await getCollection('proyectos')).sort((a, b) => a.data.orden - b.data.orden);
+  return all.map((p, i) => ({ params: { slug: p.id }, props: { p, next: all[(i + 1) % all.length], otros: [1, 2, 3].map((k) => all[(i + k) % all.length]) } }));
 }
-const { p } = Astro.props;
+const { p, next, otros } = Astro.props;
 const { Content } = await render(p);
 const d = p.data;
+const base = import.meta.env.BASE_URL;
+// Reparto en dos columnas: respeta la columna elegida en la ficha; si no, alterna. El proceso va después del resultado.
+const finales = d.galeria.filter((g) => g.tipo === 'final');
+const proceso = d.galeria.filter((g) => g.tipo === 'proceso');
+function reparte(list: typeof d.galeria) {
+  const c: [typeof d.galeria, typeof d.galeria] = [[], []];
+  list.forEach((g, i) => c[(g.columna ? g.columna - 1 : i % 2) as 0 | 1].push(g));
+  return c;
+}
+const F = reparte(finales), P = reparte(proceso);
+const hay = d.galeria.length > 0;
+const datos = [
+  ['Año', String(d.año)],
+  d.cliente ? ['Cliente', d.cliente] : null,
+  d.formato ? ['Formato', d.formato] : null,
+  d.servicios.length ? ['Servicios', d.servicios.join(', ')] : null,
+  ['Categorías', d.categorias.map((c) => CATEGORIAS[c]).join(', ')],
+].filter(Boolean) as [string, string][];
 ---
 <Base title={`${d.titulo} · Carballo Tardío`} description={d.resumen} current="proyectos">
-  <article class="wrap" style="padding-top:clamp(32px,5vw,64px);display:grid;gap:28px">
-    <Picture src={d.portada} formats={['avif','webp']} widths={[800,1400,2000]} sizes="100vw" alt={`${d.titulo}, ${d.año}`} loading="eager" style="width:100%;height:auto" />
-    <div style="display:grid;gap:12px;max-width:42rem">
-      <h1 style="font:300 var(--s4)/1.1 var(--serif)">{d.titulo} {d.provisional && <span class="prov">provisional</span>}</h1>
-      <p class="meta">{d.año} · {d.categorias.join(' · ')}</p>
-      <div><Content /></div>
+  <article class="proyecto">
+    <div class="apertura wrap">
+      {d.video
+        ? <Video url={d.video} poster={d.portada} titulo={d.titulo} />
+        : <Picture src={d.portada} formats={['avif','webp']} widths={[800, 1400, 2000, 2600]} sizes="100vw" alt={`${d.titulo}, ${d.año}`} loading="eager" fetchpriority="high" class="ap-img" />}
+      {d.provisional && <span class="flag"><span class="prov">Contenido provisional</span></span>}
     </div>
+
+    <div class:list={['cuerpo wrap', { solo: !hay }]}>
+      <aside class="info">
+        <div class="info-in">
+          <h1>{d.titulo}</h1>
+          <div class="texto"><Content /></div>
+          <dl>
+            {datos.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}
+            {d.creditos.length > 0 && <><dt>Créditos</dt><dd>{d.creditos.map((c) => <span class="cr">{c.rol}: {c.nombre}</span>)}</dd></>}
+          </dl>
+          <a class="link" href={`${base}contacto/`}>¿Un proyecto parecido? Hablemos</a>
+        </div>
+      </aside>
+      {hay && (
+        <div class="visual">
+          {[F, P].map((cols, k) => (cols[0].length + cols[1].length > 0) && (
+            <>
+              {k === 1 && <p class="label sep">Proceso</p>}
+              <div class="dos">
+                {cols.map((list, ci) => (
+                  <div class:list={['vcol', { baja: ci === 1 }]}>
+                    {list.map((g) => (
+                      <figure>
+                        <Picture src={g.src} formats={['avif','webp']} widths={[480, 800, 1200]} sizes="(min-width: 901px) 32vw, 92vw" alt={g.pie ?? d.titulo} />
+                        {g.pie && <figcaption>{g.pie}</figcaption>}
+                      </figure>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <nav class="sigue wrap" aria-label="Más proyectos">
+      <div class="block-head"><span class="label">Otros proyectos</span><a class="meta" href={`${base}proyectos/${next.id}/`}>Siguiente: {next.data.titulo} →</a></div>
+      <div class="otros">{otros.map((o) => <Tile p={o} />)}</div>
+    </nav>
   </article>
 </Base>
+
+<style>
+  .apertura{position:relative;padding-top:8px}
+  .apertura :global(.ap-img){width:100%;height:auto;max-height:86svh;object-fit:cover}
+  .flag{position:absolute;top:22px;right:calc(max(var(--margin),env(safe-area-inset-right,0px)) + 14px)}
+  .flag .prov{color:#F3E7CF;border-color:rgba(243,231,207,.6);background:rgba(48,43,37,.5)}
+  .cuerpo{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);padding-top:clamp(32px,5vw,72px);align-items:start}
+  .visual{grid-column:1 / span 8;grid-row:1;display:grid;gap:clamp(28px,4vw,56px)}
+  .info{grid-column:9 / -1;grid-row:1;align-self:stretch}
+  .info-in{position:sticky;top:24px;display:grid;gap:22px;align-content:start}
+  .solo .info{grid-column:1 / span 7}
+  .solo .info-in{position:static}
+  h1{font:300 var(--s4)/1.08 var(--serif)}
+  .texto{display:grid;gap:1em;font-size:1.05rem;line-height:1.65}
+  .texto :global(p){margin:0}
+  dl{display:grid;grid-template-columns:7rem minmax(0,1fr);gap:8px var(--gutter);margin:0;padding-top:16px;border-top:1px solid var(--line);font:400 .9rem/1.45 var(--sans)}
+  dt{color:var(--muted)}
+  dd{margin:0}
+  .cr{display:block}
+  .info .link{justify-self:start;font-size:.95rem}
+  .dos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gutter);align-items:start}
+  .vcol{display:grid;gap:clamp(20px,3vw,44px)}
+  .vcol.baja{padding-top:clamp(40px,8vw,140px)}
+  figure{margin:0;display:grid;gap:8px}
+  figure :global(img){width:100%;height:auto}
+  figcaption{font:400 .82rem/1.4 var(--sans);color:var(--muted)}
+  .sep{border-top:1px solid var(--line);padding-top:12px}
+  .sigue{padding-top:clamp(80px,10vw,140px)}
+  .otros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);align-items:start}
+  .otros :global(.frame){aspect-ratio:3/2}
+  @media (max-width:900px){
+    .cuerpo{grid-template-columns:minmax(0,1fr)}
+    .info,.visual,.solo .info{grid-column:1/-1;grid-row:auto}
+    .info-in{position:static}
+    .visual{margin-top:40px}
+    .otros{grid-template-columns:minmax(0,1fr)}
+  }
+  @media (max-width:560px){.dos{grid-template-columns:minmax(0,1fr)}.vcol.baja{padding-top:0}}
+</style>

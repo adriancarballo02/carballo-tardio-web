@@ -1,0 +1,20 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Columnas from '../../../components/Columnas.astro';
+import { getCollection } from 'astro:content';
+const base = import.meta.env.BASE_URL;
+const all = (await getCollection('proyectos')).sort((a, b) => a.data.orden - b.data.orden);
+---
+<Base title="Proyectos en columnas · Carballo Tardío" description="El archivo de Carballo Tardío en cuatro columnas que se mueven con el scroll." current="proyectos">
+  <div class="wrap head">
+    <h1>Proyectos</h1>
+    <nav class="vista" aria-label="Forma de ver el archivo"><a class="mark" href={`${base}proyectos/`}>Composición</a><a class="mark on" aria-current="page" href={`${base}proyectos/columnas/`}>Columnas</a></nav>
+  </div>
+  <Columnas items={all} />
+</Base>
+<style>
+  .head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding-top:clamp(36px,6vw,80px);padding-bottom:24px}
+  h1{font:300 var(--s5)/1 var(--serif)}
+  .vista{display:flex;gap:20px;font:400 .95rem/1 var(--sans)}
+  .vista a{text-decoration:none}
+</style>
